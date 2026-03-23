@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pisaan Grammar Police | Interactive Unit</title>
+    <style>
+        :root {
+            --police-blue: #0a192f;
+            --caution-yellow: #fdb813;
+            --evidence-gray: #e2e8f0;
+            --bg-dark: #0f172a;
+            --error-red: #ef4444;
+            --success-green: #22c55e;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-dark);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--police-blue);
+            border-bottom: 5px solid var(--caution-yellow);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .case-folder {
+            background: #1e293b;
+            border: 2px solid #334155;
+            color: var(--caution-yellow);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .case-folder:hover {
+            border-color: var(--caution-yellow);
+            transform: scale(1.05);
+            background: #334155;
+        }
+
+        .investigation-area {
+            background: var(--evidence-gray);
+            color: #1e293b;
+            padding: 30px;
+            border-radius: 10px;
+            display: none; 
+            border-left: 10px solid var(--police-blue);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .evidence-box {
+            font-size: 1.3rem;
+            background: white;
+            padding: 15px;
+            border: 2px dashed #94a3b8;
+            margin: 20px 0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            border: 2px solid #cbd5e1;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .option-label {
+            display: block;
+            background: white;
+            margin: 10px 0;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+
+        .option-label:hover { background: #f1f5f9; }
+
+        .submit-btn {
+            background: var(--police-blue);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        #feedbackArea {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .research-intel {
+            margin-top: 50px;
+            border: 1px solid var(--caution-yellow);
+            padding: 20px;
+            background: rgba(253, 184, 19, 0.1);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🚨 PISAAN GRAMMAR POLICE</h1>
+    <p>UNIT: CAPITALIZATION INTERVENTION | PNHS 2026</p>
+</header>
+
+<div class="container">
+    <h3>SELECT A CASE TO INVESTIGATE:</h3>
+    <div class="dashboard" id="caseGrid">
+        </div>
+
+    <div class="investigation-area" id="investigationArea">
+        <h2 id="caseTitle">CASE TITLE</h2>
+        <p><strong>OFFICER CLUE:</strong> <span id="caseClue">Rule description goes here.</span></p>
+        <div class="evidence-box">
+            <strong>EVIDENCE:</strong> <span id="evidenceText"></span>
+        </div>
+
+        <div id="interactionArea">
+            </div>
+        
+        <button class="submit-btn" onclick="validateCase()">Submit Findings</button>
+        <div id="feedbackArea"></div>
+    </div>
+
+    <div class="research-intel">
+        <h3>📊 INTELLIGENCE REPORT</h3>
+        <p>This digital unit addresses capitalization rules based on the <strong>Descriptive-Quantitative Study</strong> conducted at Pisaan National High School. No personal data is stored; this is strictly for educational intervention.</p>
+    </div>
+</div>
+
+<div class="footer">
+    RECAP: Case Closed. Accuracy is the law. <br>
+    RESEARCHERS: <strong>GAS STUDENTS</strong> | PNHS S.Y. 2025-2026
+</div>
+
+<script>
+    const cases = [
+        { id: "1", title: "CASE 1: Sentence Starter", clue: "Always capitalize the first word of a sentence.", type: "input", error: "the sun rises in the east.", correct: "The sun rises in the east." },
+        { id: "2", title: "CASE 2: Names of People", clue: "Proper names are capitalized.", type: "check", options: ["juan luna", "Juan Luna", "JUAN luna"], correct: "Juan Luna" },
+        { id: "3", title: "CASE 3: Map Coordinates", clue: "Names of specific places must be capitalized.", type: "input", error: "i visited cebu city.", correct: "I visited Cebu City." },
+        { id: "4", title: "CASE 4: Organizations", clue: "Pick the correct formal name.", type: "check", options: ["united nations", "United Nations", "uNited Nations"], correct: "United Nations" },
+        { id: "5", title: "CASE 5: Professional Titles", clue: "Capitalize titles (Dr., Mr.) before names.", type: "input", error: "call dr. smith.", correct: "Call Dr. Smith." },
+        { id: "6", title: "CASE 6: The Lonely 'I'", clue: "The pronoun 'I' is always capitalized.", type: "check", options: ["my friend and i", "my friend and I", "My friend and I"], correct: "my friend and I" },
+        { id: "7", title: "CASE 7: Weekday Watch", clue: "Days of the week are capitalized.", type: "input", error: "today is tuesday.", correct: "Today is Tuesday." },
+        { id: "8", title: "CASE 8: Month Tracker", clue: "Names of months are proper nouns.", type: "check", options: ["october", "October", "OCTober"], correct: "October" },
+        { id: "9", title: "CASE 9: Holiday Special", clue: "Specific holidays must be capitalized.", type: "input", error: "we love new year.", correct: "We love New Year." },
+        { id: "10", title: "CASE 10: Media Files", clue: "Titles of books/movies must be capitalized.", type: "check", options: ["the lion king", "The Lion King", "the Lion King"], correct: "The Lion King" },
+        { id: "11", title: "CASE 11: Mix (Sentence & Day)", clue: "Capitalize the start and the day.", type: "input", error: "on monday, we start.", correct: "On Monday, we start." },
+        { id: "12", title: "CASE 12: Mix (Title & Name)", clue: "Pick the correct title and name.", type: "check", options: ["prof. alcaraz", "Prof. Alcaraz", "prof. Alcaraz"], correct: "Prof. Alcaraz" },
+        { id: "13", title: "CASE 13: Mix (Pronoun & City)", clue: "Capitalize the pronoun 'I' and the city.", type: "input", error: "i want to go to manila.", correct: "I want to go to Manila." },
+        { id: "14", title: "CASE 14: Mix (Holiday & Org)", clue: "Pick the correct holiday and organization.", type: "check", options: ["red cross day", "Red Cross Day", "Red cross Day"], correct: "Red Cross Day" },
+        { id: "15", title: "CASE 15: Mix (Month & Book)", clue: "Capitalize the month and book title.", type: "input", error: "In may, I read the hobbit.", correct: "In May, I read The Hobbit." }
+    ];
+
+    let activeIdx = null;
+
+    const grid = document.getElementById('caseGrid');
+    cases.forEach((c, index) => {
+        grid.innerHTML += `<div class="case-folder" onclick="openCase(${index})">📂 CASE ${c.id}</div>`;
+    });
+
+    function openCase(index) {
+        activeIdx = index;
+        const c = cases[index];
+        const area = document.getElementById('investigationArea');
+        const interaction = document.getElementById('interactionArea');
+        
+        area.style.display = 'block';
+        document.getElementById('caseTitle').innerText = c.title;
+        document.getElementById('caseClue').innerText = c.clue;
+        document.getElementById('evidenceText').innerText = (c.type === "input") ? c.error : "Pick the correct option:";
+        document.getElementById('feedbackArea').style.display = 'none';
+        
+        interaction.innerHTML = "";
+        if(c.type === "input") {
+            interaction.innerHTML = `<input type="text" id="userInput" placeholder="Type the correct version here..." autocomplete="off">`;
+        } else {
+            c.options.forEach(opt => {
+                interaction.innerHTML += `<label class="option-label"><input type="radio" name="policeOpt" value="${opt}"> ${opt}</label>`;
+            });
+        }
+        window.scrollTo({ top: area.offsetTop - 50, behavior: 'smooth' });
+    }
+
+    function validateCase() {
+        const c = cases[activeIdx];
+        const feedback = document.getElementById('feedbackArea');
+        let isCorrect = false;
+
+        if(c.type === "input") {
+            const val = document.getElementById('userInput').value.trim();
+            if(val === c.correct) isCorrect = true;
+        } else {
+            const selected = document.querySelector('input[name="policeOpt"]:checked');
+            if(selected && selected.value === c.correct) isCorrect = true;
+        }
+
+        feedback.style.display = 'block';
+        if(isCorrect) {
+            feedback.innerHTML = `<span style="color:var(--success-green)">✅ CASE ${c.id} SOLVED! <br> Excellent work, Officer.</span>`;
+            feedback.style.background = "#dcfce7";
+        } else {
+            feedback.innerHTML = `<span style="color:var(--error-red)">😟 CASE ${c.id} FAILED. <br> Officer, check the rules again!</span>`;
+            feedback.style.background = "#fee2e2";
+        }
+    }
+</script>
+
+</body>
+</html>
